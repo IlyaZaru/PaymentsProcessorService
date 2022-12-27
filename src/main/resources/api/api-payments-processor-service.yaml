@@ -1,0 +1,147 @@
+openapi: "3.0.3"
+info:
+  title: Сервис "Обработка платежей"
+  version: 1.0.0
+paths:
+  /payments-statistics:
+    post:
+      tags:
+        - payment_processor-service
+      requestBody:
+        description: Предоставление статистики платежей
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ClientInfo'
+
+      responses:
+        200:
+          description: Запрос обработан успешно
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PaymentsStatistic'
+        400:
+          description: Неправильный запрос
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PaymentsStatistic'
+        500:
+          description: Произошла техническая ошибка
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PaymentsStatistic'
+components:
+  schemas:
+    Payment:
+      type: object
+      required:
+        - requestId
+        - clientId
+        - clientName
+        - email
+        - store
+        - currentBalance
+        - amountPayment
+        - paymentDate
+      properties:
+        requestId:
+          description: "ID запроса"
+          type: string
+          format: uuid
+          example: 895977d9-d7a4-4fef-a4ee-d99189fd608f
+        clientId:
+          description: "ID клиента"
+          type: string
+          format: uuid
+          example: 895977d9-d7a4-4fef-a4ee-d99189fd608f
+        clientName:
+          description: "Имя клиента"
+          type: string
+          example: 'Ивано Иван Иванович'
+        paymentDate:
+          description: "Дата и время платежа"
+          type: string
+          format: date-time
+          example: "2021-07-29T09:17:19.680Z"
+        email:
+          description: "Электронная почта"
+          type: string
+          example: 'pochta@mail.ru'
+        store:
+          description: "Наименование магазина"
+          type: string
+          example: 'Пятерочка'
+        currentBalance:
+          description: "Текущий счет"
+          type: number
+          format: double
+          example: 3434.3
+        amountPayment:
+          description: "Сумма платежа"
+          type: number
+          format: double
+          example: 45.33
+    ClientInfo:
+      type: object
+      required:
+        - requestId
+        - clientId
+      properties:
+        requestId:
+          description: "ID запроса"
+          type: string
+          format: uuid
+          example: 895977d9-d7a4-4fef-a4ee-d99189fd608f
+        clientId:
+          description: "ID клиента"
+          type: string
+          format: uuid
+          example: 895977d9-d7a4-4fef-a4ee-d99189fd608f
+        clientName:
+          description: "Имя клиента"
+          type: string
+          example: 'Ивано Иван Иванович'
+        store:
+          description: "Наименование магазина"
+          type: string
+          example: 'Пятерочка'
+    PaymentsStatistic:
+      type: object
+      required:
+        - requestId
+        - clientId
+        - totalAmount
+        - payments
+      properties:
+        requestId:
+          description: "ID запроса"
+          type: string
+          format: uuid
+          example: 895977d9-d7a4-4fef-a4ee-d99189fd608f
+        clientId:
+          description: "ID клиента"
+          type: string
+          format: uuid
+          example: 895977d9-d7a4-4fef-a4ee-d99189fd608f
+        clientName:
+          description: "Имя клиента"
+          type: string
+          example: 'Ивано Иван Иванович'
+        filtrationStore:
+          description: "Наименование магазина по которому производится выборка"
+          type: string
+          example: 'Пятерочка'
+        totalAmount:
+          description: "Общая сумма платежей по заданным условиям выборки"
+          type: number
+          format: double
+          example: 45.33
+        payments:
+          description: "Список платежей по заданным условиям выборки"
+          type: array
+          items:
+            $ref: '#/components/schemas/Payment'

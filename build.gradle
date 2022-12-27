@@ -1,12 +1,14 @@
 plugins {
+	id 'org.springframework.boot' version '2.4.0'
+	id 'io.spring.dependency-management' version '1.0.10.RELEASE'
+	id "org.openapi.generator" version "4.3.1"
 	id 'java'
-	id 'org.springframework.boot' version '3.0.1'
-	id 'io.spring.dependency-management' version '1.1.0'
 }
 
 group = 'kafka-goal'
-version = '0.0.1-SNAPSHOT'
-sourceCompatibility = '17'
+version = '0.0.1'
+sourceCompatibility = '11'
+compileJava.options.encoding = 'UTF-8'
 
 configurations {
 	compileOnly {
@@ -18,8 +20,47 @@ repositories {
 	mavenCentral()
 }
 
+sourceSets {
+	main {
+		java {
+			srcDirs "${project.buildDir}/generated/src/main/java", "${rootDir}/src/main/java}"
+		}
+	}
+}
+
+openApiValidate {
+	inputSpec = "${rootDir}/src/main/resources/api/api-payments-processor-service.yaml"
+}
+
+openApiGenerate {
+	generatorName = "spring"
+	library = "spring-boot"
+	inputSpec = "${rootDir}/src/main/resources/api/api-payments-processor-service.yaml"
+	outputDir = "${project.buildDir}/generated"
+
+	configOptions = [
+			useOptional                   : "true",
+			useBeanValidation             : "true",
+			useTags                       : "true",
+			singleContentTypes            : "true",
+			dateLibrary                   : "java8",
+			title                         : rootProject.name,
+			artifactId                    : rootProject.name,
+			apiPackage                    : "kafka-goal.api-payments-processor-service.api",
+			modelPackage                  : "kafka-goal.api-payments-processor-service.model",
+			interfaceOnly                 : "true",
+			reactive                      : "true",
+			additionalModelTypeAnnotations: "@com.fasterxml.jackson.annotation.JsonInclude(com.fasterxml.jackson.annotation.JsonInclude.Include.NON_NULL)"
+	]
+}
+
 dependencies {
 	implementation 'org.springframework.boot:spring-boot-starter-webflux'
+	implementation 'org.springframework.boot:spring-boot-starter-validation'
+	implementation 'io.springfox:springfox-boot-starter:3.0.0'
+	implementation 'org.openapitools:jackson-databind-nullable:0.2.1'
+	implementation "io.projectreactor.kafka:reactor-kafka:1.1.0.RELEASE"
+	implementation 'org.springframework.kafka:spring-kafka:2.9.0'
 	compileOnly 'org.projectlombok:lombok'
 	annotationProcessor 'org.projectlombok:lombok'
 	testImplementation 'org.springframework.boot:spring-boot-starter-test'
@@ -29,3 +70,5 @@ dependencies {
 tasks.named('test') {
 	useJUnitPlatform()
 }
+
+compileJava.dependsOn 'openApiGenerate', 'openApiValidate'
