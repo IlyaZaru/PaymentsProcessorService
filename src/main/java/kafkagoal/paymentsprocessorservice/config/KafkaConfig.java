@@ -1,8 +1,6 @@
 package kafkagoal.paymentsprocessorservice.config;
 
 import kafka_goal.api_payments_processor_service.model.Payment;
-import org.apache.kafka.clients.consumer.ConsumerConfig;
-import org.apache.kafka.common.TopicPartition;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.autoconfigure.kafka.KafkaProperties;
 import org.springframework.context.annotation.Bean;
@@ -10,9 +8,7 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.kafka.support.serializer.JsonDeserializer;
 import reactor.kafka.receiver.KafkaReceiver;
 import reactor.kafka.receiver.ReceiverOptions;
-import reactor.kafka.receiver.ReceiverPartition;
 
-import java.time.Duration;
 import java.util.Collections;
 import java.util.UUID;
 
