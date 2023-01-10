@@ -1,0 +1,13 @@
+server:
+  port: 8102
+
+custom-kafka:
+  payment-topic: 'payments'
+  consumer-notification-group: 'notification-group'
+  consumer-statistics-group: 'statistics-group'
+
+spring:
+  kafka:
+    bootstrap-servers: localhost:9092
+    consumer:
+      key-deserializer: org.apache.kafka.common.serialization.UUIDDeserializer
