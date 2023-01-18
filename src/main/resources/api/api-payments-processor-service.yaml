@@ -114,8 +114,6 @@ components:
       required:
         - requestId
         - clientId
-        - totalAmount
-        - payments
       properties:
         requestId:
           description: "ID запроса"
@@ -140,6 +138,10 @@ components:
           type: number
           format: double
           example: 45.33
+        errorMessage:
+          description: "Текст ошибки"
+          type: string
+          example: 'Error 404'
         payments:
           description: "Список платежей по заданным условиям выборки"
           type: array

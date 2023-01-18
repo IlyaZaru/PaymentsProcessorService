@@ -5,9 +5,10 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.autoconfigure.kafka.KafkaProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.kafka.support.serializer.JsonDeserializer;
+import org.springframework.kafka.core.reactive.ReactiveKafkaConsumerTemplate;
 import reactor.kafka.receiver.KafkaReceiver;
 import reactor.kafka.receiver.ReceiverOptions;
+import reactor.kafka.receiver.ReceiverPartition;
 
 import java.util.Collections;
 import java.util.UUID;
@@ -28,22 +29,16 @@ public class KafkaConfig {
     public KafkaReceiver<UUID, Payment> reactiveKafkaConsumer(KafkaProperties kafkaProperties) {
         kafkaProperties.getConsumer().setGroupId(notificationGroup);
         ReceiverOptions<UUID, Payment> receiverOptions = ReceiverOptions.<UUID, Payment>create(kafkaProperties.buildConsumerProperties())
-                .withValueDeserializer(getDeserializer())
                 .subscription(Collections.singleton(sourceTopic));
         return KafkaReceiver.create(receiverOptions);
     }
 
-//    @Bean(name = "notificationConsumer")
-//    public ReactiveKafkaProducerTemplate<UUID, Payment> reactiveKafkaProducerTemplate(KafkaProperties kafkaProperties) {
-//        SenderOptions<UUID, Payment> senderOptions = SenderOptions.create(kafkaProperties.buildProducerProperties());
-//        return new ReactiveKafkaProducerTemplate<>(senderOptions);
-//    }
-
-    private JsonDeserializer<Payment> getDeserializer() {
-        JsonDeserializer<Payment> deserializer = new JsonDeserializer<>(Payment.class);
-        deserializer.setRemoveTypeHeaders(false);
-        deserializer.addTrustedPackages("*");
-        deserializer.setUseTypeMapperForKey(true);
-        return deserializer;
+    @Bean
+    public ReactiveKafkaConsumerTemplate<UUID, Payment> reactiveKafkaConsumerTemplate(KafkaProperties kafkaProperties) {
+        kafkaProperties.getConsumer().setGroupId(statisticsGroup);
+        ReceiverOptions<UUID, Payment> receiverOptions = ReceiverOptions.<UUID, Payment>create(kafkaProperties.buildConsumerProperties())
+                .addAssignListener(partitions -> partitions.forEach(ReceiverPartition::seekToBeginning))
+                .subscription(Collections.singleton(sourceTopic));
+        return new ReactiveKafkaConsumerTemplate<>(receiverOptions);
     }
 }
