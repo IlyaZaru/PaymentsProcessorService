@@ -36,7 +36,7 @@ public class ApiPaymentsProcessorService implements PaymentProcessorServiceApi {
     public Mono<ResponseEntity<PaymentsStatistic>> paymentsStatisticsPost(Mono<ClientInfo> clientInfo, ServerWebExchange exchange) {
         final AtomicReference<UUID> requestIdRef = new AtomicReference<>(UUID.fromString("00000000-0000-0000-0000-000000000000"));
         final AtomicReference<UUID> clientIdRef = new AtomicReference<>(UUID.fromString("00000000-0000-0000-0000-000000000000"));
-        final AtomicReference<String> storeRef = new AtomicReference<>(null);
+        final AtomicReference<String> storeRef = new AtomicReference<>();
         return statisticsComputer.compute(clientInfo.doOnNext(clInfo -> {
                     requestIdRef.set(clInfo.getRequestId());
                     clientIdRef.set(clInfo.getClientId());
